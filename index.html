@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - TOGOSHOP</title>
+    <!-- Carga de Tailwind CSS y Font Awesome (para iconos) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Configuración de fuente (Inter) -->
+    <style>
+        @import url('https://fonts.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            padding-bottom: 70px; 
+        }
+        /* Para input number sin flechas en algunos navegadores */
+        input[type='number']::-webkit-inner-spin-button, 
+        input[type='number']::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        /* Estilo para el input de cantidad dentro del botón */
+        .quantity-input {
+            width: 100%;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+            border: none;
+            outline: none;
+            -moz-appearance: textfield; /* Para Firefox */
+        }
+        /* Estilos específicos para la notificación */
+        #notification-box {
+            right: -100%; /* Inicia fuera de la pantalla */
+            transition: right 0.5s ease-out, opacity 0.5s ease-out;
+            opacity: 0;
+        }
+        #notification-box.show {
+            right: 1rem; /* Termina 1rem del borde derecho */
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Encabezado Fijo -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <!-- Contenedor para el Logo y el Título -->
+            <div class="flex items-center space-x-3">
+                <!-- AGREGAR AQUI LA URL DE TU LOGO -->
+                <img 
+                    src="togoshop1.png" 
+                    alt="Logo de TOGOSHOP" 
+                    class="h-8 w-auto rounded-md"
+                    onerror="this.style.display='none';"> 
+                <h1 class="text-3xl font-extrabold text-gray-900">TOGOSHOP</h1>
+            </div>
+            
+            <!-- Botón del Carrito y Condiciones -->
+            <div class="flex items-center space-x-4">
+                <a href="#condiciones" class="hidden sm:inline text-sm sm:text-base font-medium text-blue-600 hover:text-blue-800 transition duration-150">
+                    Condiciones
+                </a>
+                <a href="carrito.html" id="cart-link" class="relative p-2 bg-blue-600 hover:bg-blue-700 rounded-full text-white transition duration-150 shadow-lg">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full hidden">0</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Sección de Héroe -->
+    <section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-4">Catálogo Mayorista de Productos</h2>
+            <p class="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto">
+                Selecciona la cantidad de piezas y pulsa "Agregar" para empezar tu pedido de mayoreo.
+            </p>
+        </div>
+    </section>
+
+    <!-- Sección de Condiciones (Colapsable) -->
+    <section id="condiciones" class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+            <details class="p-6">
+                <summary class="text-2xl font-bold text-gray-800 cursor-pointer list-none flex justify-between items-center">
+                    Condiciones de Compra
+                    <span class="text-blue-500 text-sm">(Clic para expandir)</span>
+                </summary>
+                <div class="mt-6 border-t pt-6 text-gray-700 space-y-4">
+                    <!-- Contenido de condiciones... -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900">Precios de Mayoreo y Menudeo</h4>
+                        <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                            <li>El precio de **Mayoreo** aplica en compras a partir de <strong>$2,000 MXN</strong>.</li>
+                            <li>Si el total es menor, se aplicarán los precios de **Menudeo** (precio regular).</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900">Envíos</h4>
+                        <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                            <li><strong>Envío gratis</strong> en pedidos mayores a $2,000 (aplicando precio mayoreo).</li>
+                            <li>Para pedidos menores a $2,000, el costo de envío es de <strong>$150 MXN</strong> (aplicando precio menudeo).</li>
+                            <li>Realizamos envíos por FedEx, Estafeta o J&T Express.</li>
+                            <li>Los envíos se procesan una vez confirmado el pago.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900">Notas Importantes</h4>
+                        <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                            <li>Puedes combinar diferentes productos para alcanzar el monto mínimo.</li>
+                            <li>Todos los pedidos se empacan cuidadosamente para asegurar la llegada en perfectas condiciones.</li>
+                            <li>Se envía número de guía al momento de realizar el envío.</li>
+                        </ul>
+                    </div>
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <!-- Catálogo de Productos -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h3 class="text-3xl font-extrabold text-center text-gray-900 mb-10">Lista de Artículos</h3>
+
+        <!-- Grid de Productos -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+
+            <!-- Producto 1: AirPods Pro 2da Gen -->
+            <div class="product-card bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.01]" 
+                data-id="1" 
+                data-name="AirPods Pro 2da Gen" 
+                data-price-may="199" 
+                data-price-men="299"> <!-- PRECIO MENUDEO AÑADIDO -->
+                <div class="aspect-w-1 aspect-h-1 bg-gray-50">
+                    <img class="w-full h-full object-contain p-4" src="pro2da.jpg" alt="AirPods Pro 2da Generación" onerror="this.src='https://placehold.co/500x500/f8f8f8/333?text=Sin+Imagen'; this.onerror=null;">
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-2">AirPods Pro 2da Gen</h4>
+                    <!-- Precio Menudeo (TACHADO) -->
+                    <p class="text-xl font-medium text-gray-500 mb-1 line-through">$299 <span class="text-sm font-normal">MXN</span></p>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-4">
+                        <p class="text-sm font-medium text-blue-700">Precio Mayoreo (mín. $2000)</p>
+                        <!-- Precio DESTACADO (Mayoreo) -->
+                        <p class="text-3xl font-bold text-blue-800">$199 <span class="text-lg font-normal">MXN</span></p>
+                    </div>
+                    <!-- CONTROL DE CANTIDAD MEJORADO -->
+                    <div class="flex items-stretch space-x-2 mt-auto">
+                        <div class="flex border border-gray-300 rounded-lg overflow-hidden w-28 shadow-sm">
+                            <button onclick="changeQuantity(this, -1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Disminuir cantidad">-</button>
+                            <input type="number" value="1" min="1" max="99" class="quantity-input text-gray-800 font-medium bg-white" data-quantity-input>
+                            <button onclick="changeQuantity(this, 1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Aumentar cantidad">+</button>
+                        </div>
+                        <button onclick="addToCart(this)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-200 shadow-md">
+                            <i class="fas fa-cart-plus mr-1"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 2: AirPods Pro 3ra Gen -->
+            <div class="product-card bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.01]"
+                data-id="2" 
+                data-name="AirPods Pro 3ra Gen" 
+                data-price-may="349" 
+                data-price-men="499"> <!-- PRECIO MENUDEO AÑADIDO -->
+                <div class="aspect-w-1 aspect-h-1 bg-gray-50">
+                    <img class="w-full h-full object-contain p-4" src="pro3ra.png" alt="AirPods Pro 3ra Generación">
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-2">AirPods Pro 3ra Gen</h4>
+                    <!-- Precio Menudeo (TACHADO) -->
+                    <p class="text-xl font-medium text-gray-500 mb-1 line-through">$499 <span class="text-sm font-normal">MXN</span></p>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-4">
+                        <p class="text-sm font-medium text-blue-700">Precio Mayoreo (mín. $2000)</p>
+                        <!-- Precio DESTACADO (Mayoreo) -->
+                        <p class="text-3xl font-bold text-blue-800">$349 <span class="text-lg font-normal">MXN</span></p>
+                    </div>
+                    <!-- CONTROL DE CANTIDAD MEJORADO -->
+                    <div class="flex items-stretch space-x-2 mt-auto">
+                        <div class="flex border border-gray-300 rounded-lg overflow-hidden w-28 shadow-sm">
+                            <button onclick="changeQuantity(this, -1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Disminuir cantidad">-</button>
+                            <input type="number" value="1" min="1" max="99" class="quantity-input text-gray-800 font-medium bg-white" data-quantity-input>
+                            <button onclick="changeQuantity(this, 1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Aumentar cantidad">+</button>
+                        </div>
+                        <button onclick="addToCart(this)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-200 shadow-md">
+                            <i class="fas fa-cart-plus mr-1"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 3: AirPods 4ta Gen -->
+            <div class="product-card bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.01]" 
+                data-id="3" 
+                data-name="AirPods 4ta Gen" 
+                data-price-may="249" 
+                data-price-men="349"> <!-- PRECIO MENUDEO AÑADIDO -->
+                <div class="aspect-w-1 aspect-h-1 bg-gray-50">
+                    <img class="w-full h-full object-contain p-4" src="airpods4ta.jpg" alt="AirPods 4ta Generación">
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-2">AirPods 4ta Gen</h4>
+                    <!-- Precio Menudeo (TACHADO) -->
+                    <p class="text-xl font-medium text-gray-500 mb-1 line-through">$349 <span class="text-sm font-normal">MXN</span></p>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-4">
+                        <p class="text-sm font-medium text-blue-700">Precio Mayoreo (mín. $2000)</p>
+                        <!-- Precio DESTACADO (Mayoreo) -->
+                        <p class="text-3xl font-bold text-blue-800">$249 <span class="text-lg font-normal">MXN</span></p>
+                    </div>
+                    <!-- CONTROL DE CANTIDAD MEJORADO -->
+                    <div class="flex items-stretch space-x-2 mt-auto">
+                        <div class="flex border border-gray-300 rounded-lg overflow-hidden w-28 shadow-sm">
+                            <button onclick="changeQuantity(this, -1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Disminuir cantidad">-</button>
+                            <input type="number" value="1" min="1" max="99" class="quantity-input text-gray-800 font-medium bg-white" data-quantity-input>
+                            <button onclick="changeQuantity(this, 1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Aumentar cantidad">+</button>
+                        </div>
+                        <button onclick="addToCart(this)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-200 shadow-md">
+                            <i class="fas fa-cart-plus mr-1"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 4: Audífonos Pro Max -->
+            <div class="product-card bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.01]"
+                data-id="4" 
+                data-name="Audífonos Pro Max" 
+                data-price-may="349" 
+                data-price-men="499"> <!-- PRECIO MENUDEO AÑADIDO -->
+                <div class="aspect-w-1 aspect-h-1 bg-gray-50">
+                    <img class="w-full h-full object-contain p-4" src="promax.jpg" alt="Audífonos Pro Max">
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-2">Audífonos Pro Max</h4>
+                    <!-- Precio Menudeo (TACHADO) -->
+                    <p class="text-xl font-medium text-gray-500 mb-1 line-through">$499 <span class="text-sm font-normal">MXN</span></p>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-4">
+                        <p class="text-sm font-medium text-blue-700">Precio Mayoreo (mín. $2000)</p>
+                        <!-- Precio DESTACADO (Mayoreo) -->
+                        <p class="text-3xl font-bold text-blue-800">$349 <span class="text-lg font-normal">MXN</span></p>
+                    </div>
+                    <!-- CONTROL DE CANTIDAD MEJORADO -->
+                    <div class="flex items-stretch space-x-2 mt-auto">
+                        <div class="flex border border-gray-300 rounded-lg overflow-hidden w-28 shadow-sm">
+                            <button onclick="changeQuantity(this, -1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Disminuir cantidad">-</button>
+                            <input type="number" value="1" min="1" max="99" class="quantity-input text-gray-800 font-medium bg-white" data-quantity-input>
+                            <button onclick="changeQuantity(this, 1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Aumentar cantidad">+</button>
+                        </div>
+                        <button onclick="addToCart(this)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-200 shadow-md">
+                            <i class="fas fa-cart-plus mr-1"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 5: Watch Ultra -->
+            <div class="product-card bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.01]"
+                data-id="5" 
+                data-name="Watch Ultra" 
+                data-price-may="499" 
+                data-price-men="699"> <!-- PRECIO MENUDEO AÑADIDO -->
+                <div class="aspect-w-1 aspect-h-1 bg-gray-50">
+                    <img class="w-full h-full object-contain p-4" src="whatchultra.jpeg" alt="Watch Ultra">
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-2">Watch Ultra</h4>
+                    <!-- Precio Menudeo (TACHADO) -->
+                    <p class="text-xl font-medium text-gray-500 mb-1 line-through">$699 <span class="text-sm font-normal">MXN</span></p>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-4">
+                        <p class="text-sm font-medium text-blue-700">Precio Mayoreo (mín. $2000)</p>
+                        <!-- Precio DESTACADO (Mayoreo) -->
+                        <p class="text-3xl font-bold text-blue-800">$499 <span class="text-lg font-normal">MXN</span></p>
+                    </div>
+                    <!-- CONTROL DE CANTIDAD MEJORADO -->
+                    <div class="flex items-stretch space-x-2 mt-auto">
+                        <div class="flex border border-gray-300 rounded-lg overflow-hidden w-28 shadow-sm">
+                            <button onclick="changeQuantity(this, -1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Disminuir cantidad">-</button>
+                            <input type="number" value="1" min="1" max="99" class="quantity-input text-gray-800 font-medium bg-white" data-quantity-input>
+                            <button onclick="changeQuantity(this, 1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Aumentar cantidad">+</button>
+                        </div>
+                        <button onclick="addToCart(this)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-200 shadow-md">
+                            <i class="fas fa-cart-plus mr-1"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 6: Watch Ultra Hermes -->
+            <div class="product-card bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.01]"
+                data-id="6" 
+                data-name="Watch Ultra Hermes" 
+                data-price-may="499" 
+                data-price-men="699"> <!-- PRECIO MENUDEO AÑADIDO -->
+                <div class="aspect-w-1 aspect-h-1 bg-gray-50">
+                    <img class="w-full h-full object-contain p-4" src="hermesultra.jpeg" alt="Watch Ultra Hermes">
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-2">Watch Ultra Hermes</h4>
+                    <!-- Precio Menudeo (TACHADO) -->
+                    <p class="text-xl font-medium text-gray-500 mb-1 line-through">$699 <span class="text-sm font-normal">MXN</span></p>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-4">
+                        <p class="text-sm font-medium text-blue-700">Precio Mayoreo (mín. $2000)</p>
+                        <!-- Precio DESTACADO (Mayoreo) -->
+                        <p class="text-3xl font-bold text-blue-800">$499 <span class="text-lg font-normal">MXN</span></p>
+                    </div>
+                    <!-- CONTROL DE CANTIDAD MEJORADO -->
+                    <div class="flex items-stretch space-x-2 mt-auto">
+                        <div class="flex border border-gray-300 rounded-lg overflow-hidden w-28 shadow-sm">
+                            <button onclick="changeQuantity(this, -1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Disminuir cantidad">-</button>
+                            <input type="number" value="1" min="1" max="99" class="quantity-input text-gray-800 font-medium bg-white" data-quantity-input>
+                            <button onclick="changeQuantity(this, 1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Aumentar cantidad">+</button>
+                        </div>
+                        <button onclick="addToCart(this)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-200 shadow-md">
+                            <i class="fas fa-cart-plus mr-1"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 7: Watch Nike -->
+            <div class="product-card bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.01]"
+                data-id="7" 
+                data-name="Watch Nike" 
+                data-price-may="499" 
+                data-price-men="699"> <!-- PRECIO MENUDEO AÑADIDO -->
+                <div class="aspect-w-1 aspect-h-1 bg-gray-50">
+                    <img class="w-full h-full object-contain p-4" src="nike.jpeg" alt="Watch Nike">
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-2">Watch Nike</h4>
+                    <!-- Precio Menudeo (TACHADO) -->
+                    <p class="text-xl font-medium text-gray-500 mb-1 line-through">$699 <span class="text-sm font-normal">MXN</span></p>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-4">
+                        <p class="text-sm font-medium text-blue-700">Precio Mayoreo (mín. $2000)</p>
+                        <!-- Precio DESTACADO (Mayoreo) -->
+                        <p class="text-3xl font-bold text-blue-800">$499 <span class="text-lg font-normal">MXN</span></p>
+                    </div>
+                    <!-- CONTROL DE CANTIDAD MEJORADO -->
+                    <div class="flex items-stretch space-x-2 mt-auto">
+                        <div class="flex border border-gray-300 rounded-lg overflow-hidden w-28 shadow-sm">
+                            <button onclick="changeQuantity(this, -1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Disminuir cantidad">-</button>
+                            <input type="number" value="1" min="1" max="99" class="quantity-input text-gray-800 font-medium bg-white" data-quantity-input>
+                            <button onclick="changeQuantity(this, 1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Aumentar cantidad">+</button>
+                        </div>
+                        <button onclick="addToCart(this)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-200 shadow-md">
+                            <i class="fas fa-cart-plus mr-1"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 8: Watch Slim -->
+            <div class="product-card bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.01]"
+                data-id="8" 
+                data-name="Watch Slim" 
+                data-price-may="499" 
+                data-price-men="699"> <!-- PRECIO MENUDEO AÑADIDO -->
+                <div class="aspect-w-1 aspect-h-1 bg-gray-50">
+                    <img class="w-full h-full object-contain p-4" src="whatchslim.jpg" alt="Watch Slim">
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-2">Watch Slim</h4>
+                    <!-- Precio Menudeo (TACHADO) -->
+                    <p class="text-xl font-medium text-gray-500 mb-1 line-through">$699 <span class="text-sm font-normal">MXN</span></p>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-4">
+                        <p class="text-sm font-medium text-blue-700">Precio Mayoreo (mín. $2000)</p>
+                        <!-- Precio DESTACADO (Mayoreo) -->
+                        <p class="text-3xl font-bold text-blue-800">$499 <span class="text-lg font-normal">MXN</span></p>
+                    </div>
+                    <!-- CONTROL DE CANTIDAD MEJORADO -->
+                    <div class="flex items-stretch space-x-2 mt-auto">
+                        <div class="flex border border-gray-300 rounded-lg overflow-hidden w-28 shadow-sm">
+                            <button onclick="changeQuantity(this, -1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Disminuir cantidad">-</button>
+                            <input type="number" value="1" min="1" max="99" class="quantity-input text-gray-800 font-medium bg-white" data-quantity-input>
+                            <button onclick="changeQuantity(this, 1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Aumentar cantidad">+</button>
+                        </div>
+                        <button onclick="addToCart(this)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-200 shadow-md">
+                            <i class="fas fa-cart-plus mr-1"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 9: Cubo Carga Rápida -->
+            <div class="product-card bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.01]"
+                data-id="9" 
+                data-name="Cubo Carga Rápida" 
+                data-price-may="69" 
+                data-price-men="99"> <!-- PRECIO MENUDEO AÑADIDO -->
+                <div class="aspect-w-1 aspect-h-1 bg-gray-50">
+                    <img class="w-full h-full object-contain p-4" src="cubo.jpeg" alt="Cubo Carga Rápida">
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-2">Cubo Carga Rápida</h4>
+                    <!-- Precio Menudeo (TACHADO) -->
+                    <p class="text-xl font-medium text-gray-500 mb-1 line-through">$99 <span class="text-sm font-normal">MXN</span></p>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-4">
+                        <p class="text-sm font-medium text-blue-700">Precio Mayoreo (mín. $2000)</p>
+                        <!-- Precio DESTACADO (Mayoreo) -->
+                        <p class="text-3xl font-bold text-blue-800">$69 <span class="text-lg font-normal">MXN</span></p>
+                    </div>
+                    <!-- CONTROL DE CANTIDAD MEJORADO -->
+                    <div class="flex items-stretch space-x-2 mt-auto">
+                        <div class="flex border border-gray-300 rounded-lg overflow-hidden w-28 shadow-sm">
+                            <button onclick="changeQuantity(this, -1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Disminuir cantidad">-</button>
+                            <input type="number" value="1" min="1" max="99" class="quantity-input text-gray-800 font-medium bg-white" data-quantity-input>
+                            <button onclick="changeQuantity(this, 1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Aumentar cantidad">+</button>
+                        </div>
+                        <button onclick="addToCart(this)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-200 shadow-md">
+                            <i class="fas fa-cart-plus mr-1"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 10: Cargador + Cable -->
+            <div class="product-card bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.01]"
+                data-id="10" 
+                data-name="Cargador + Cable" 
+                data-price-may="99" 
+                data-price-men="149"> <!-- PRECIO MENUDEO AÑADIDO -->
+                <div class="aspect-w-1 aspect-h-1 bg-gray-50">
+                    <img class="w-full h-full object-contain p-4" src="carcable.jpg" alt="Cargador + Cable">
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-2">Cargador + Cable</h4>
+                    <!-- Precio Menudeo (TACHADO) -->
+                    <p class="text-xl font-medium text-gray-500 mb-1 line-through">$149 <span class="text-sm font-normal">MXN</span></p>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-4">
+                        <p class="text-sm font-medium text-blue-700">Precio Mayoreo (mín. $2000)</p>
+                        <!-- Precio DESTACADO (Mayoreo) -->
+                        <p class="text-3xl font-bold text-blue-800">$99 <span class="text-lg font-normal">MXN</span></p>
+                    </div>
+                    <!-- CONTROL DE CANTIDAD MEJORADO -->
+                    <div class="flex items-stretch space-x-2 mt-auto">
+                        <div class="flex border border-gray-300 rounded-lg overflow-hidden w-28 shadow-sm">
+                            <button onclick="changeQuantity(this, -1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Disminuir cantidad">-</button>
+                            <input type="number" value="1" min="1" max="99" class="quantity-input text-gray-800 font-medium bg-white" data-quantity-input>
+                            <button onclick="changeQuantity(this, 1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Aumentar cantidad">+</button>
+                        </div>
+                        <button onclick="addToCart(this)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-200 shadow-md">
+                            <i class="fas fa-cart-plus mr-1"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 11: Cargador MagSafe -->
+            <div class="product-card bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.01]"
+                data-id="11" 
+                data-name="Cargador MagSafe" 
+                data-price-may="99" 
+                data-price-men="199"> <!-- PRECIO MENUDEO AÑADIDO -->
+                <div class="aspect-w-1 aspect-h-1 bg-gray-50">
+                    <img class="w-full h-full object-contain p-4" src="magsafe.jpg" alt="Cargador MagSafe">
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-2">Cargador MagSafe</h4>
+                    <!-- Precio Menudeo (TACHADO) -->
+                    <p class="text-xl font-medium text-gray-500 mb-1 line-through">$199 <span class="text-sm font-normal">MXN</span></p>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-4">
+                        <p class="text-sm font-medium text-blue-700">Precio Mayoreo (mín. $2000)</p>
+                        <!-- Precio DESTACADO (Mayoreo) -->
+                        <p class="text-3xl font-bold text-blue-800">$99 <span class="text-lg font-normal">MXN</span></p>
+                    </div>
+                    <!-- CONTROL DE CANTIDAD MEJORADO -->
+                    <div class="flex items-stretch space-x-2 mt-auto">
+                        <div class="flex border border-gray-300 rounded-lg overflow-hidden w-28 shadow-sm">
+                            <button onclick="changeQuantity(this, -1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Disminuir cantidad">-</button>
+                            <input type="number" value="1" min="1" max="99" class="quantity-input text-gray-800 font-medium bg-white" data-quantity-input>
+                            <button onclick="changeQuantity(this, 1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Aumentar cantidad">+</button>
+                        </div>
+                        <button onclick="addToCart(this)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-200 shadow-md">
+                            <i class="fas fa-cart-plus mr-1"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 12: Batería MagSafe -->
+            <div class="product-card bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.01]"
+                data-id="12" 
+                data-name="Batería MagSafe" 
+                data-price-may="199" 
+                data-price-men="299"> <!-- PRECIO MENUDEO AÑADIDO -->
+                <div class="aspect-w-1 aspect-h-1 bg-gray-50">
+                    <img class="w-full h-full object-contain p-4" src="bat.jpg" alt="Batería MagSafe">
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-2">Batería MagSafe</h4>
+                    <!-- Precio Menudeo (TACHADO) -->
+                    <p class="text-xl font-medium text-gray-500 mb-1 line-through">$299 <span class="text-sm font-normal">MXN</span></p>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-4">
+                        <p class="text-sm font-medium text-blue-700">Precio Mayoreo (mín. $2000)</p>
+                        <!-- Precio DESTACADO (Mayoreo) -->
+                        <p class="text-3xl font-bold text-blue-800">$199 <span class="text-lg font-normal">MXN</span></p>
+                    </div>
+                    <!-- CONTROL DE CANTIDAD MEJORADO -->
+                    <div class="flex items-stretch space-x-2 mt-auto">
+                        <div class="flex border border-gray-300 rounded-lg overflow-hidden w-28 shadow-sm">
+                            <button onclick="changeQuantity(this, -1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Disminuir cantidad">-</button>
+                            <input type="number" value="1" min="1" max="99" class="quantity-input text-gray-800 font-medium bg-white" data-quantity-input>
+                            <button onclick="changeQuantity(this, 1)" class="w-8 bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold transition duration-150" aria-label="Aumentar cantidad">+</button>
+                        </div>
+                        <button onclick="addToCart(this)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-200 shadow-md">
+                            <i class="fas fa-cart-plus mr-1"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Pie de Página -->
+    <footer class="bg-gray-900 text-white mt-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+            <p>&copy; 2025 TOGOSHOP. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Contenedor para la Notificación Mejorada -->
+    <div id="notification-box" class="fixed bottom-4 z-[100] max-w-xs w-full bg-white border border-gray-200 rounded-xl shadow-2xl p-4 flex flex-col space-y-3">
+        <!-- El contenido se llenará con JS -->
+    </div>
+
+    <!-- Script de Gestión de Carrito (Local Storage) -->
+    <script>
+        // Almacena el ID del timeout de la notificación para poder cancelarlo
+        let notificationTimeoutId = null;
+
+        /**
+         * Función auxiliar para obtener el input de cantidad de un botón.
+         */
+        function getQuantityInput(element) {
+            const card = element.closest('.product-card');
+            return card ? card.querySelector('[data-quantity-input]') : null;
+        }
+
+        /**
+         * Cambia el valor del input de cantidad de forma táctil.
+         */
+        function changeQuantity(buttonElement, delta) {
+            const input = getQuantityInput(buttonElement);
+            if (!input) return;
+
+            let currentValue = parseInt(input.value) || 1;
+            let newValue = currentValue + delta;
+            const min = parseInt(input.min) || 1;
+            const max = parseInt(input.max) || 99;
+
+            if (newValue < min) {
+                newValue = min;
+            } else if (newValue > max) {
+                newValue = max;
+            }
+
+            input.value = newValue;
+        }
+
+
+        /**
+         * Lee el carrito desde localStorage. Ahora también lee el precio de menudeo.
+         */
+        function getCart() {
+            try {
+                const cartData = localStorage.getItem('togoshopCart');
+                return cartData ? JSON.parse(cartData) : {};
+            } catch (e) {
+                console.error("Error al leer el carrito de localStorage:", e);
+                return {};
+            }
+        }
+
+        /**
+         * Guarda el carrito en localStorage.
+         */
+        function saveCart(cart) {
+            try {
+                localStorage.setItem('togoshopCart', JSON.stringify(cart));
+                updateCartCount();
+            } catch (e) {
+                console.error("Error al guardar el carrito en localStorage:", e);
+            }
+        }
+
+        /**
+         * Añade o actualiza un producto en el carrito.
+         */
+        function addToCart(buttonElement) {
+            const card = buttonElement.closest('.product-card');
+            const productId = card.dataset.id;
+            const productName = card.dataset.name;
+            const priceMayoreo = parseFloat(card.dataset.priceMay);
+            const priceMenudeo = parseFloat(card.dataset.priceMen); // Nuevo: Precio de menudeo
+            
+            const input = getQuantityInput(buttonElement);
+            // Lee la cantidad del input o asume 1 si falla
+            const quantity = parseInt(input ? input.value : 1) || 1; 
+            
+            if (quantity < 1) {
+                // Usar la notificación mejorada para errores también
+                showNotification("¡Atención!", "La cantidad mínima para agregar es 1.", 'red');
+                return;
+            }
+
+            const cart = getCart();
+
+            // Si el producto ya está, suma la cantidad
+            if (cart[productId]) {
+                cart[productId].quantity += quantity;
+            } else {
+                // Si es nuevo, lo agrega (incluyendo ambos precios)
+                cart[productId] = {
+                    name: productName,
+                    priceMay: priceMayoreo,
+                    priceMen: priceMenudeo,
+                    quantity: quantity
+                };
+            }
+
+            saveCart(cart);
+            // Llamada a la nueva función de notificación
+            showNotification(`${quantity}x ${productName} agregado(s).`, "Artículo añadido correctamente al pedido.", 'green');
+            
+            // Restablecer el input a 1 después de agregar para el siguiente producto
+            if (input) input.value = 1;
+        }
+
+        /**
+         * Actualiza el contador del carrito en el header.
+         */
+        function updateCartCount() {
+            const cart = getCart();
+            let totalItems = 0;
+            for (const id in cart) {
+                totalItems += cart[id].quantity;
+            }
+
+            const cartCountElement = document.getElementById('cart-count');
+            if (totalItems > 0) {
+                cartCountElement.textContent = totalItems;
+                cartCountElement.classList.remove('hidden');
+            } else {
+                cartCountElement.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Muestra la notificación de éxito con botón Ver Carrito.
+         * @param {string} title - Título del mensaje (Producto/Cantidad).
+         * @param {string} message - Mensaje descriptivo.
+         * @param {string} type - 'green' (éxito) o 'red' (error).
+         */
+        function showNotification(title, message, type = 'green') {
+            const box = document.getElementById('notification-box');
+            
+            // Limpiar cualquier timeout anterior
+            if (notificationTimeoutId) {
+                clearTimeout(notificationTimeoutId);
+                notificationTimeoutId = null;
+            }
+
+            // Definir colores y íconos según el tipo
+            const iconClass = type === 'green' ? 'fas fa-check-circle text-green-500' : 'fas fa-times-circle text-red-500';
+            const titleColor = type === 'green' ? 'text-green-600' : 'text-red-600';
+            const buttonColor = type === 'green' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 hover:bg-gray-500';
+
+
+            // Contenido de la notificación
+            box.innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <i class="${iconClass} text-2xl mt-1"></i>
+                    <div class="flex-1">
+                        <p class="font-bold text-gray-900 ${titleColor}">${title}</p>
+                        <p class="text-sm text-gray-600">${message}</p>
+                    </div>
+                    <button onclick="hideNotification()" class="text-gray-400 hover:text-gray-600 transition">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                ${type === 'green' ? `
+                    <a href="carrito.html" class="w-full text-center py-2 px-4 rounded-lg text-white font-semibold ${buttonColor} transition duration-150 shadow-md">
+                        <i class="fas fa-shopping-cart mr-2"></i> Ver Carrito
+                    </a>
+                ` : ''}
+            `;
+            
+            // Mostrar la caja
+            box.classList.add('show');
+
+            // Ocultar automáticamente después de 5 segundos
+            notificationTimeoutId = setTimeout(() => {
+                hideNotification();
+            }, 5000);
+        }
+        
+        /**
+         * Oculta la notificación y limpia el timeout.
+         */
+        function hideNotification() {
+            const box = document.getElementById('notification-box');
+            box.classList.remove('show');
+            if (notificationTimeoutId) {
+                clearTimeout(notificationTimeoutId);
+                notificationTimeoutId = null;
+            }
+        }
+
+        // Inicializar el contador al cargar la página
+        window.onload = updateCartCount;
+    </script>
+</body>
+</html>

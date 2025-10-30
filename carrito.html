@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito - TOGOSHOP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado Fijo -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <a href="index.html" class="text-3xl font-extrabold text-gray-900 hover:text-blue-600 transition duration-150">TOGOSHOP</a>
+            </div>
+            <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Seguir Comprando
+            </a>
+        </nav>
+    </header>
+
+    <!-- Contenido Principal: Carrito y Resumen -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center sm:text-left">Tu Pedido Mayorista</h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Columna del Carrito (Productos) -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Título y Vaciar Carrito -->
+                <div class="flex justify-between items-center border-b pb-4">
+                    <h2 class="text-2xl font-semibold text-gray-800">Artículos Seleccionados</h2>
+                    <!-- Se utiliza un modal para evitar el uso de window.confirm() -->
+                    <button id="clear-cart-btn" onclick="showClearCartModal()" class="text-red-500 hover:text-red-700 font-medium transition duration-150 flex items-center">
+                        <i class="fas fa-trash-alt mr-2"></i> Vaciar Carrito
+                    </button>
+                </div>
+                
+                <!-- Lista de Productos (Se llena con JS) -->
+                <div id="cart-items-container" class="bg-white rounded-xl shadow-lg p-4 sm:p-6 min-h-[200px] flex flex-col justify-center items-center">
+                    <p class="text-gray-500 text-lg">Tu carrito está vacío.</p>
+                </div>
+            </div>
+
+            <!-- Columna de Resumen (Totales) -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b pb-3">Resumen de Compra</h2>
+                    
+                    <!-- Detalles del Subtotal -->
+                    <div class="space-y-3 mb-6">
+                        <div class="flex justify-between text-gray-600 text-lg">
+                            <span>Subtotal (sin descuento):</span>
+                            <span id="subtotal-menudeo" class="font-medium">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-gray-600 text-lg">
+                            <span>Subtotal con Mayoreo:</span>
+                            <span id="subtotal-mayoreo" class="font-medium">$0.00</span>
+                        </div>
+                        
+                        <div class="flex justify-between text-gray-600 text-lg border-t pt-3">
+                            <span>Costo de Envío:</span>
+                            <span id="shipping-cost" class="font-medium text-red-500">$150.00</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Mensaje de Condiciones -->
+                    <div id="conditions-message" class="p-3 rounded-lg text-sm mb-6 border-l-4 border-blue-500 bg-blue-50 text-blue-800">
+                        <!-- El mensaje se llena con JS -->
+                    </div>
+
+                    <!-- Total Final -->
+                    <div class="flex justify-between items-center pt-4 border-t-2 border-gray-200">
+                        <span class="text-xl font-bold text-gray-900">Total a Pagar:</span>
+                        <span id="final-total" class="text-3xl font-extrabold text-blue-600">$0.00</span>
+                    </div>
+
+                    <!-- Botón de Checkout -->
+                    <!-- La función generateCheckoutLink ahora hará la redirección directa -->
+                    <button id="checkout-btn" onclick="generateCheckoutLink()" class="w-full mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition duration-200 shadow-lg disabled:opacity-50" disabled>
+                        <i class="fab fa-whatsapp mr-2"></i> Enviar Pedido por WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Confirmación para Vaciar Carrito (Mantenido) -->
+    <div id="confirm-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm transform transition-all">
+            <h3 class="text-xl font-bold mb-4 text-red-600 flex items-center">
+                <i class="fas fa-exclamation-triangle text-2xl mr-3"></i> Confirmar
+            </h3>
+            <p class="text-gray-700 mb-6">¿Estás seguro de que quieres vaciar todo el carrito?</p>
+            
+            <div class="flex justify-end space-x-3">
+                <button onclick="clearCart()" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-150">
+                    Sí, Vaciar
+                </button>
+                <button onclick="hideClearCartModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-150">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Se elimina el modal 'checkout-modal' ya que haremos redirección directa -->
+
+    <script>
+        const MIN_MAYOREO_AMOUNT = 2000;
+        const SHIPPING_COST_MENUDEO = 150;
+        
+        /**
+         * Lee el carrito desde localStorage.
+         */
+        function getCart() {
+            try {
+                const cartData = localStorage.getItem('togoshopCart');
+                return cartData ? JSON.parse(cartData) : {};
+            } catch (e) {
+                console.error("Error al leer el carrito de localStorage:", e);
+                return {};
+            }
+        }
+
+        /**
+         * Guarda el carrito en localStorage y recalcula.
+         */
+        function saveCart(cart) {
+            try {
+                localStorage.setItem('togoshopCart', JSON.stringify(cart));
+                renderCart(); // Recalcula y redibuja
+            } catch (e) {
+                console.error("Error al guardar el carrito en localStorage:", e);
+            }
+        }
+
+        /**
+         * Actualiza la cantidad de un producto en el carrito.
+         */
+        function updateQuantity(productId, delta) {
+            const cart = getCart();
+            const product = cart[productId];
+
+            if (!product) return;
+
+            product.quantity += delta;
+
+            if (product.quantity <= 0) {
+                delete cart[productId];
+            } else {
+                product.quantity = Math.max(1, product.quantity); // Asegura mínimo 1
+            }
+
+            saveCart(cart);
+        }
+
+        /**
+         * Elimina un producto del carrito.
+         */
+        function removeItem(productId) {
+            const cart = getCart();
+            delete cart[productId];
+            saveCart(cart);
+        }
+
+        /**
+         * Muestra el modal de confirmación para vaciar el carrito.
+         * Se usa un modal en lugar de window.confirm()
+         */
+        function showClearCartModal() {
+            if (Object.keys(getCart()).length > 0) {
+                document.getElementById('confirm-modal').classList.remove('hidden');
+                document.getElementById('confirm-modal').classList.add('flex');
+            }
+        }
+
+        /**
+         * Oculta el modal de confirmación.
+         */
+        function hideClearCartModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            document.getElementById('confirm-modal').classList.remove('flex');
+        }
+
+        /**
+         * Vacía todo el carrito.
+         */
+        function clearCart() {
+            localStorage.removeItem('togoshopCart');
+            hideClearCartModal(); // Cerrar el modal
+            renderCart();
+        }
+
+        /**
+         * Limpia y convierte a número un valor que podría ser una cadena.
+         * @param {string | number} value - El valor del precio.
+         * @returns {number} El precio convertido o 0 si no es válido.
+         */
+        function parsePrice(value) {
+            if (typeof value === 'number') {
+                return value;
+            }
+            if (typeof value === 'string') {
+                // Elimina cualquier signo de peso o espacios en blanco antes de parsear
+                const cleanedValue = value.replace(/[^0-9.]/g, '');
+                const parsed = parseFloat(cleanedValue);
+                // Retorna el número o 0 si es NaN (Not a Number)
+                return isNaN(parsed) ? 0 : parsed;
+            }
+            return 0;
+        }
+
+        /**
+         * Calcula los totales del carrito con la lógica de menudeo/mayoreo.
+         * @param {Object} cart - El objeto del carrito.
+         * @returns {Object} Un objeto con los totales calculados.
+         */
+        function calculateTotals(cart) {
+            let subtotalMenudeo = 0;
+            let subtotalMayoreo = 0;
+
+            // 1. Calcular ambos subtotales, asegurando que los precios sean números
+            for (const id in cart) {
+                const item = cart[id];
+                
+                // Usa parsePrice para asegurar que son números
+                const priceMen = parsePrice(item.priceMen);
+                const priceMay = parsePrice(item.priceMay);
+
+                subtotalMenudeo += priceMen * item.quantity;
+                subtotalMayoreo += priceMay * item.quantity;
+            }
+
+            // 2. Aplicar la lógica de negocio
+            let finalSubtotal = 0;
+            let shippingCost = SHIPPING_COST_MENUDEO;
+            let priceMode = 'MENUDEO'; // Modo por defecto
+
+            if (subtotalMayoreo >= MIN_MAYOREO_AMOUNT) {
+                // Aplica precio MAYOREO + ENVÍO GRATIS
+                finalSubtotal = subtotalMayoreo;
+                shippingCost = 0;
+                priceMode = 'MAYOREO';
+            } else {
+                // Aplica precio MENUDEO + Envío de $150
+                finalSubtotal = subtotalMenudeo;
+                shippingCost = SHIPPING_COST_MENUDEO;
+                priceMode = 'MENUDEO';
+            }
+
+            // La suma total ya está correcta aquí: finalSubtotal (menudeo o mayoreo) + shippingCost (150 o 0)
+            const finalTotal = finalSubtotal + shippingCost;
+            
+            return {
+                subtotalMenudeo,
+                subtotalMayoreo,
+                finalSubtotal,
+                shippingCost,
+                finalTotal,
+                priceMode
+            };
+        }
+        
+        /**
+         * Formatea un número como moneda MXN.
+         */
+        function formatCurrency(amount) {
+            // Asegurarse de que amount sea un número antes de formatear
+            const numberAmount = typeof amount === 'number' ? amount : 0;
+            return new Intl.NumberFormat('es-MX', {
+                style: 'currency',
+                currency: 'MXN',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }).format(numberAmount);
+        }
+
+        /**
+         * Renderiza la lista de productos y los totales.
+         */
+        function renderCart() {
+            const cart = getCart();
+            const container = document.getElementById('cart-items-container');
+            const totals = calculateTotals(cart);
+            const isEmpty = Object.keys(cart).length === 0;
+
+            // --- RENDERIZAR ARTÍCULOS ---
+            if (isEmpty) {
+                container.innerHTML = '<p class="text-gray-500 text-lg">Tu carrito está vacío.</p>';
+                document.getElementById('clear-cart-btn').disabled = true;
+                document.getElementById('checkout-btn').disabled = true;
+            } else {
+                document.getElementById('clear-cart-btn').disabled = false;
+                document.getElementById('checkout-btn').disabled = false;
+                
+                let html = '';
+                for (const id in cart) {
+                    const item = cart[id];
+                    
+                    // Asegurarse de usar precios numéricos para el renderizado
+                    const priceMen = parsePrice(item.priceMen);
+                    const priceMay = parsePrice(item.priceMay);
+                    
+                    // Determinar qué precio unitario se muestra en la lista
+                    const displayPrice = totals.priceMode === 'MAYOREO' ? priceMay : priceMen;
+                    
+                    // Calcular el subtotal del ítem usando el precio unitario numérico
+                    const itemSubtotal = displayPrice * item.quantity;
+
+                    html += `
+                        <div class="flex items-center justify-between border-b last:border-b-0 py-4 sm:py-6">
+                            <!-- Producto y Nombre -->
+                            <div class="flex items-center space-x-4 flex-1 min-w-0">
+                                <img src="https://placehold.co/80x80/eef2ff/333?text=Prod" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover hidden sm:block">
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-semibold text-gray-900 truncate">${item.name}</p>
+                                    <!-- Muestra el precio unitario numérico y formateado -->
+                                    <p class="text-sm text-gray-500">Precio unitario: ${formatCurrency(displayPrice)}</p>
+                                    ${totals.priceMode === 'MAYOREO' ? 
+                                        `<span class="text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full">Precio Mayoreo Aplicado</span>` :
+                                        `<span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">Precio Menudeo Aplicado</span>`
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Cantidad -->
+                            <div class="flex items-center space-x-2 w-32 justify-center mx-4">
+                                <button onclick="updateQuantity('${id}', -1)" class="text-gray-500 hover:text-blue-600 text-lg transition"><i class="fas fa-minus-circle"></i></button>
+                                <span class="font-bold text-gray-800">${item.quantity}</span>
+                                <button onclick="updateQuantity('${id}', 1)" class="text-gray-500 hover:text-blue-600 text-lg transition"><i class="fas fa-plus-circle"></i></button>
+                            </div>
+
+                            <!-- Subtotal y Eliminar -->
+                            <div class="text-right w-24">
+                                <!-- Muestra el subtotal del ítem calculado correctamente -->
+                                <p class="font-bold text-lg text-gray-900">${formatCurrency(itemSubtotal)}</p>
+                                <button onclick="removeItem('${id}')" class="text-red-400 hover:text-red-600 text-xs mt-1 transition">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+            }
+
+            // --- RENDERIZAR TOTALES Y MENSAJE ---
+            document.getElementById('subtotal-menudeo').textContent = formatCurrency(totals.subtotalMenudeo);
+            document.getElementById('subtotal-mayoreo').textContent = formatCurrency(totals.subtotalMayoreo);
+            document.getElementById('shipping-cost').innerHTML = totals.shippingCost === 0 ? 
+                '<span class="text-green-500 font-bold">¡GRATIS!</span>' : formatCurrency(totals.shippingCost);
+            document.getElementById('final-total').textContent = formatCurrency(totals.finalTotal);
+            
+            const messageBox = document.getElementById('conditions-message');
+            messageBox.className = 'p-3 rounded-xl text-sm mb-6 border-l-4 transition duration-300';
+            
+            if (totals.priceMode === 'MAYOREO') {
+                messageBox.classList.add('border-green-500', 'bg-green-50', 'text-green-800');
+                messageBox.innerHTML = `
+                    <p class="font-bold">¡APLICA MAYOREO!</p>
+                    <p>El subtotal de ${formatCurrency(totals.finalSubtotal)} supera el mínimo de ${formatCurrency(MIN_MAYOREO_AMOUNT)}.</p>
+                    <p class="font-bold mt-1">Se aplica precio de mayoreo y el envío es GRATIS.</p>
+                `;
+            } else if (!isEmpty) {
+                // Cálculo para el mensaje de cuánto falta (asegura que no sea negativo)
+                const requiredAmount = Math.max(0, MIN_MAYOREO_AMOUNT - totals.subtotalMayoreo);
+                messageBox.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-800');
+                messageBox.innerHTML = `
+                    <p class="font-bold">¡MODO MENUDEO!</p>
+                    <p>El subtotal de mayoreo (${formatCurrency(totals.subtotalMayoreo)}) es menor a ${formatCurrency(MIN_MAYOREO_AMOUNT)}.</p>
+                    <p class="font-bold mt-1">Se aplica precio de menudeo y se añade costo de envío de ${formatCurrency(SHIPPING_COST_MENUDEO)}.</p>
+                    <p class="mt-2">Te faltan <span class="font-bold">${formatCurrency(requiredAmount)}</span> para alcanzar el precio de mayoreo y envío gratis.</p>
+                `;
+            } else {
+                messageBox.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-800');
+                messageBox.innerHTML = `Añade productos para comenzar tu pedido de mayoreo.`;
+            }
+        }
+
+        /**
+         * Genera el enlace de WhatsApp con el resumen del pedido y REDIRECCIONA DIRECTAMENTE.
+         */
+        function generateCheckoutLink() {
+            const cart = getCart();
+            const totals = calculateTotals(cart);
+            if (Object.keys(cart).length === 0) return;
+
+            let message = "¡Hola! Quiero hacer un pedido a TOGOSHOP:\n\n";
+            message += "--- DETALLE DE ARTÍCULOS ---\n";
+
+            for (const id in cart) {
+                const item = cart[id];
+                
+                // Asegurarse de usar precios numéricos
+                const priceMen = parsePrice(item.priceMen);
+                const priceMay = parsePrice(item.priceMay);
+
+                // Usar el precio que realmente se aplicó al calcular el subtotal final
+                const priceApplied = totals.priceMode === 'MAYOREO' ? priceMay : priceMen;
+                
+                message += `* ${item.quantity}x ${item.name} (${formatCurrency(priceApplied)} c/u)\n`;
+            }
+            
+            message += "\n--- RESUMEN ---\n";
+            message += `Modalidad: ${totals.priceMode}\n`;
+            message += `Subtotal (${totals.priceMode}): ${formatCurrency(totals.finalSubtotal)}\n`;
+            message += `Costo de Envío: ${totals.shippingCost === 0 ? "GRATIS" : formatCurrency(totals.shippingCost)}\n`;
+            message += `\n*TOTAL A PAGAR: ${formatCurrency(totals.finalTotal)}*\n\n`;
+            message += "¡Espero tu confirmación para proceder con el pago!";
+
+            // *** CAMBIO CLAVE: Usamos tu número y redireccionamos directamente ***
+            const whatsappNumber = "5572438465"; // Tu número de WhatsApp
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+            // Redirección directa en una nueva pestaña
+            window.open(whatsappLink, '_blank');
+        }
+
+        // Ya no necesitamos las funciones closeModal o copyToClipboardAndClose.
+
+        // Inicializar al cargar la página
+        window.onload = renderCart;
+    </script>
+</body>
+</html>
